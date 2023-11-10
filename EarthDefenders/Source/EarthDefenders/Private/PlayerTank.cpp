@@ -11,8 +11,8 @@ APlayerTank::APlayerTank()
 
 	currentHealth = maxHealth;
 	
-	dynaMat = UMaterialInstanceDynamic::Create(materialOriginal, this);
-	dynaMat->SetScalarParameterValue("IntegrityLevel", static_cast<float>(currentHealth)/static_cast<float>(maxHealth));
+	//dynaMat = UMaterialInstanceDynamic::Create(materialOriginal, this);
+	//dynaMat->SetScalarParameterValue("IntegrityLevel", static_cast<float>(currentHealth)/static_cast<float>(maxHealth));
 }
 
 // Called when the game starts or when spawned
@@ -29,12 +29,16 @@ void APlayerTank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(currentShootCooldown >= 0.0f)
+	{
+		currentShootCooldown -= DeltaTime;
+	}
+
 }
 
 // Called to bind functionality to input
 void APlayerTank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 

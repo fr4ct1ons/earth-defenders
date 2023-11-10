@@ -9,6 +9,7 @@ APlayerAlien::APlayerAlien()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	currentMovementCount = maxMovementCount;
 }
 
 // Called when the game starts or when spawned
@@ -27,7 +28,8 @@ void APlayerAlien::BeginPlay()
 			FActorSpawnParameters params;
 			//params.bNoFail = true;
 			params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			AActor* alien = world->SpawnActor<AActor>(AlienBP, tempPos, FRotator(0), params);
+			AActor* alien = NULL;
+			alien = world->SpawnActor<AActor>(AlienBP, tempPos, FRotator(0), params);
 
 			if(alien == NULL)
 			{
@@ -44,7 +46,8 @@ void APlayerAlien::BeginPlay()
 				{
 					UE_LOG(LogTemp, Warning, TEXT("Root is null!"));
 				}
-				alien->SetActorLabel(name);
+				//For whatever reason this does not work when building, so disabling this for now.
+				//alien->SetActorLabel(name);
 			}
 		}
 	}
@@ -55,6 +58,15 @@ void APlayerAlien::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(currentMovementCooldown >= 0.0)
+	{
+		currentMovementCooldown -= DeltaTime;
+	}
+
+	if(currentShootCooldown >= 0.0f)
+	{
+		currentShootCooldown -= DeltaTime;
+	}
 }
 
 // Called to bind functionality to input
@@ -62,5 +74,61 @@ void APlayerAlien::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+bool APlayerAlien::Movement(float direction)
+{
+
+	if(FMath::Abs(direction) >= 0.01f && currentMovementCooldown <= 0.0f)
+	{
+		if(GEngine)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Emerald, TEXT("Movement"));
+		}
+		float strength = FMath::Clamp(direction, -1, 1);
+
+		invaderRoot->AddWorldOffset(FVector(0, strength * 50.0f, 0));
+		FVector bufferLocation(0);
+		bufferLocation = invaderRoot->GetComponentLocation();
+		invaderRoot->SetWorldLocation(FVector(bufferLocation.X, FMath::Clamp(bufferLocation.Y, -700, 100), bufferLocation.Z));
+
+		currentMovementCooldown = movementCooldown;
+		
+		currentMovementCount--;
+		if(currentMovementCount <= 0)
+		{
+			Descend();
+		}
+
+		bufferLocation = invaderRoot->GetRelativeLocation();
+		
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void APlayerAlien::Descend()
+{
+	currentMovementCount = maxMovementCount;
+	invaderRoot->AddWorldOffset(FVector(0.0, 0.0, heightDecreaseAmount));
+}
+
+void APlayerAlien::AlienFire()
+{
+	FHitResult hr;
+
+	if(currentShootCooldown <= 0.0)
+	{
+		bool hasHit = GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, true, hr);
+
+		if(hasHit)
+		{
+			AActor* actor = hr.GetActor();
+		}
+	}
+	
 }
 

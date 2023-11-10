@@ -35,6 +35,11 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UMaterialInterface* materialOriginal;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInstanceDynamic* dynaMat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float currentShootCooldown = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float shootCooldown = 0.75f;
 };

@@ -25,6 +25,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void Descend();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -35,4 +36,33 @@ protected:
 	TSubclassOf<AActor> AlienBP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent *invaderRoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float minShootCooldown = 0.5f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float maxShootCooldown = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float currentShootCooldown = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float selectShootCooldown = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float currentMovementCooldown = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float movementCooldown = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 currentMovementCount = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 maxMovementCount = 12;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float heightDecreaseAmount = -50.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float winDescension = 500.0f;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool Movement(float direction);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void AlienFire();
 };
